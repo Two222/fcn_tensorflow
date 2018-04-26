@@ -129,4 +129,4 @@ if __name__ =="__main__":
 	path = root+'test.jpg'
 	annotated_label = predict(path)
 	original_im = imread(root+'test_origin.png')
-	output = crf(root,original_im,annotated_label,'crf_test.png')
+	output = crf(root,original_im,annotated_label,'test_crf.png')
