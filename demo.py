@@ -9,13 +9,14 @@ import numpy as np
 import tensorflow as tf
 from model import FCN32_test, FCN16_test, FCN8_test
 from dataloader import Dataloader, Dataloader_small
-from util import get_original_size, seg_gray_to_rgb
+from util import seg_gray_to_rgb,colormap
 import matplotlib.pyplot as plt
 import cv2
 import pdb
 import os
 
 
+gray_to_rgb, rgb_to_gray = colormap()
 # BGR mean pixel value
 MEAN_PIXEL = np.array([103.939, 116.779, 123.68])
 
@@ -62,16 +63,17 @@ def predict(path):
 		
 		annotated_label  = np.argmax(pred[0], axis=2)
 
-		return annotated_label
+		return im,annotated_label
 
 if __name__ =="__main__":
 	root = './dataset/demo/'
 	path = root+'test.jpg'
-	annotated_label = predict(path)
-	seg_rgb = seg_gray_to_rgb(annotated_label, data_loader.gray_to_rgb)
+	im,annotated_label = predict(path)
+
+	seg_rgb = seg_gray_to_rgb(annotated_label, gray_to_rgb)
 	f, (ax1, ax2) = plt.subplots(1, 2, sharey=False)
 	ax1.imshow(seg_rgb)
 	ax2.imshow(im)
 	plt.show()
-	cv2.imwrite(dump_path+path.split('/')[-1].split('.')[0]+'_seg.png', seg_rgb)
-	cv2.imwrite(dump_path+path.split('/')[-1].split('.')[0]+'_origin.png', im)
+	cv2.imwrite(root+path.split('/')[-1].split('.')[0]+'_seg.png', seg_rgb)
+	cv2.imwrite(root+path.split('/')[-1].split('.')[0]+'_origin.png', im)

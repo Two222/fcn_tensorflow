@@ -114,7 +114,6 @@ def crf(root,original_image,annotated_label,output_image, use_2d = True):
 	MAP = np.argmax(Q, axis=0)#(409600, 3)
 	# Convert the MAP (labels) back to the corresponding colors and save the image.
 	# Note that there is no "unknown" here anymore, no matter what we had at first.
-	pdb.set_trace()
 	MAP = colorize[MAP,:]
 	seg_crf = MAP.reshape(original_image.shape)[:,:,0]
 	seg_rgb = seg_gray_to_rgb(seg_crf, gray_to_rgb)
