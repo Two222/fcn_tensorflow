@@ -1,15 +1,19 @@
-# Demo
-# Author: Yuliang Zou
-#         ylzou@umich.edu
-# Date:   2017-03-03
+#-*-coding:utf8-*-
+
+__author = "buyizhiyou"
+__date = "2018-4-26"
+
+# Demo to predict one image,plot results
 
 import numpy as np
 import tensorflow as tf
-from Model import FCN32_test, FCN16_test, FCN8_test
-from Dataloader import Dataloader, Dataloader_small
+from model import FCN32_test, FCN16_test, FCN8_test
+from dataloader import Dataloader, Dataloader_small
+from util import get_original_size, seg_gray_to_rgb
 import matplotlib.pyplot as plt
 import cv2
-import ipdb
+import pdb
+import os
 
 
 # BGR mean pixel value
@@ -23,7 +27,7 @@ CLASSES = ('__background__',
            'sheep', 'sofa', 'train', 'tvmonitor')
 
 config = {
-'batch_num':5, 
+'batch_num':1, 
 'iter':100000, 
 'num_classes':21, 
 'max_size':(640,640),
@@ -32,40 +36,42 @@ config = {
 'momentum': 0.9
 }
 
-if __name__ == '__main__':
-	model = FCN8_test(config)
+def predict(path):
+	'''
+	use fcn to predict for segmentation
+	'''
+	model = FCN16_test(config)
 	data_loader = Dataloader('val', config)
 
 	saver = tf.train.Saver()
-	ckpt = '../model/FCN8_adam_iter_10000.ckpt'
-	# Extract ckpt into npy, if needed
-	# with tf.Session(config=tf.ConfigProto(allow_soft_placement=True)) as session:
-		# model.extract(ckpt, session, saver)
-	# ipdb.set_trace()
-
-	dump_path = '../demo/'
+	ckpt = './models/FCN16_adam_iter_5000.ckpt'
+	dump_path = './dataset/demo/'
+	if not os.path.exists(dump_path):
+		os.makedirs(dump_path)
 
 	with tf.Session(config=tf.ConfigProto(allow_soft_placement=True)) as session:
 		saver.restore(session, ckpt)
-		print 'Model restored.'
-
-		minibatch = data_loader.get_next_minibatch()
-		feed_dict = {model.img: minibatch[0],
-						model.seg: minibatch[1],
-						model.mask: minibatch[2]}
+		print ('Model restored.')
+		im = cv2.imread(path)
+		im = cv2.resize(im,(640,640))
+		im2 = np.expand_dims(im,0)
+		feed_dict = {model.img: im2}
+						
 		pred = session.run(model.get_output('deconv'), feed_dict=feed_dict)
+		#pdb.set_trace()
+		
+		annotated_label  = np.argmax(pred[0], axis=2)
 
-		for i in range(config['batch_num']):
-			mask = minibatch[2][i]
-			seg  = np.argmax(pred[i], axis=2)
-			img  = minibatch[0][i]
-			gt   = minibatch[1][i][:,:,0]
-			f, (ax1, ax2, ax3) = plt.subplots(1, 3, sharey=False)
-			ax1.imshow(seg)
-			img = img + MEAN_PIXEL
-			ax2.imshow(img[:,:,::-1])
-			ax3.imshow(gt)
-			plt.show()
-			cv2.imwrite(dump_path + str(i) + '_seg.png', seg)
-			cv2.imwrite(dump_path + str(i) + '_img.png', img)
+		return annotated_label
 
+if __name__ =="__main__":
+	root = './dataset/demo/'
+	path = root+'test.jpg'
+	annotated_label = predict(path)
+	seg_rgb = seg_gray_to_rgb(annotated_label, data_loader.gray_to_rgb)
+	f, (ax1, ax2) = plt.subplots(1, 2, sharey=False)
+	ax1.imshow(seg_rgb)
+	ax2.imshow(im)
+	plt.show()
+	cv2.imwrite(dump_path+path.split('/')[-1].split('.')[0]+'_seg.png', seg_rgb)
+	cv2.imwrite(dump_path+path.split('/')[-1].split('.')[0]+'_origin.png', im)

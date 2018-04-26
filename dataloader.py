@@ -1,5 +1,7 @@
-# Define the data loader for segmentation task
+#-*-coding:utf8-*-
 
+__author = "buyizhiyou"
+__date = "2018-4-26"
 
 import pdb
 import numpy as np
@@ -8,8 +10,8 @@ from util import colormap, prep_im_for_blob, prep_run_wrapper, prep_small_run_wr
 import multiprocessing
 
 """
-The Dataloader for VOC2011 to load and preprocess input image and segmentation
-ground truth. (Only)
+The Dataloader for VOC2012 to load and preprocess input image and segmentation
+ground truth. 
 """
 class Dataloader(object):
 	def __init__(self, split, config):
@@ -93,7 +95,7 @@ class Dataloader_test(Dataloader):
 		if split != 'train' and split != 'val' and split != 'trainval' and split != 'test':
 			raise Exception('Please enter valid split variable!')
 
-		root = '../data/VOCdevkit/VOC2011/'
+		root = './dataset/VOC2012/'
 		self.img_path = join(root, 'JPEGImages/')
 		self.seg_path = join(root, 'SegmentationClass/')
 		self.split = split
@@ -116,15 +118,12 @@ class Dataloader_test(Dataloader):
 		seg_name = self._seg_at(i)
 		data = prep_im_for_blob(img_name, seg_name, self.rgb_to_gray, self.max_size)
 		img_blob = data['im_blob']
-		# seg_blob = data['seg_blob']
 		mask = data['mask']
 		ori_size = data['original_size']
 
 		img_blobs = np.array([img_blob])
-		# seg_blobs = np.array([seg_blob])
 		mask_blobs = np.array([mask])
 		seg_blobs = None
-		# mask_blobs = None
 
 		return [img_blobs, seg_blobs, mask_blobs, ori_size]
 
@@ -191,4 +190,4 @@ if __name__ == '__main__':
 	minibatch = dataloader.get_next_minibatch()
 
 
-	ipdb.set_trace()
+	pdb.set_trace()

@@ -1,8 +1,8 @@
 # tf_fcn
 
-A TensorFlow Implementation of:
-
+Implented FCN8,FCN16,FCN32,Using CRF layer
 [CVPR 2015] Long et al. [Fully Convolutional Networks for Semantic Segmentation](https://people.eecs.berkeley.edu/~jonlong/long_shelhamer_fcn.pdf)
+infering [tf_fcn](https://github.com/Yuliang-Zou/tf_fcn)
 
 
 ## Requirements
@@ -11,12 +11,14 @@ A TensorFlow Implementation of:
 
 ## Prepare dataset
 
-In this implementation, we use the [VOC2012 dataset](https://pjreddie.com/projects/pascal-voc-dataset-mirror/).
+In this implementation, we use the [VOC2012 dataset](https://pjreddie.com/projects/pascal-voc-dataset-mirror/).Download dataset and put in `./dataset/` folder
 
 
 ## Pre-trained model
 
-
+```bash
+mkdir models
+```
 We use a ImageNet pre-trained model to initialize the network, please download the npy file [here](https://drive.google.com/file/d/0B2SnTpv8L4iLRTFZb0FWenRJTlU/view?usp=sharing) and put it under the `./models` folder.
 
 
@@ -35,18 +37,11 @@ python train_small.py    # resize
 
 ```bash
 python demo.py
+python demo_crf.py #add crf layer
 ```
 
 You can change the `config` dictionary to use custom settings.
 
-
-## Generate Predictions
-
-First you should run the following code:
-
-```bash
-python test.py
-```
 
 ## Models
 

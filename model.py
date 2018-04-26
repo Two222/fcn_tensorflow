@@ -1,3 +1,10 @@
+#-*-coding:utf8-*-
+
+__author = "buyizhiyou"
+__date = "2018-4-26"
+
+
+
 # Define the vgg16 style model
 
 

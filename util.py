@@ -1,4 +1,7 @@
-# Define some util functions
+#-*-coding:utf8-*-
+
+__author = "buyizhiyou"
+__date = "2018-4-26"
 
 
 import numpy as np
@@ -100,6 +103,7 @@ def colormap(N=256):
 
 	return gray_to_rgb, rgb_to_gray
 
+
 """Get original size"""
 def get_original_size(mask, max_size=(640,640)):
 	row = None
@@ -115,7 +119,7 @@ def get_original_size(mask, max_size=(640,640)):
 			break
 
 	if row is None or col is None:
-		ipdb.set_trace()
+		pdb.set_trace()
 	return row, col
 
 """Transform gray scale segmentation result to rgb format"""
@@ -135,7 +139,6 @@ def seg_gray_to_rgb(seg, gray_to_rgb):
 
 """
 Helper functions for bilinear upsampling
-credit: http://warmspringwinds.github.io/tensorflow/tf-slim/2016/11/22/upsampling-and-image-segmentation-with-tensorflow-and-tf-slim/
 """
 def get_kernel_size(factor):
 	"""
@@ -178,9 +181,9 @@ def bilinear_upsample_weights(factor, number_of_classes):
 
 
 if __name__ == '__main__':
-	root = '../data/VOCdevkit/VOC2011/'
-	im_name = root + 'JPEGImages/2007_000033.jpg'
-	seg_name = root + 'SegmentationClass/2007_000033.png'
+	root = './dataset/VOC2012/'
+	im_name = root + 'JPEGImages/2007_006615.jpg'
+	seg_name = root + 'SegmentationClass/2007_006615.png'
 	_, rgb_to_gray = colormap()
 
 	# im_blob, seg_blob = prep_im_for_blob(im_name, seg_name, rgb_to_gray)
@@ -192,4 +195,4 @@ if __name__ == '__main__':
 	plt.show()
 	plt.imshow(seg_blob[:,:,0])
 	plt.show()
-	ipdb.set_trace()
+

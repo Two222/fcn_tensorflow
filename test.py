@@ -1,17 +1,20 @@
-# Generate segmentation results
-# Author: Yuliang Zou
-#         ylzou@umich.edu
-# Date:   2017-03-07
+#-*-coding:utf8-*-
+
+__author = "buyizhiyou"
+__date = "2018-4-26"
+
+
+# Generate segmentation results,test on val dataset,dump results into ./dataset/results
 
 import numpy as np
 import tensorflow as tf
-from Model import FCN32_test, FCN16_test, FCN8_test
-from Dataloader import Dataloader, Dataloader_test
+from model import FCN32_test, FCN16_test, FCN8_test
+from dataloader import Dataloader, Dataloader_test
 from util import get_original_size, seg_gray_to_rgb
 import cv2
 from os import makedirs
 from os.path import exists, join
-import ipdb
+
 
 
 config = {
@@ -27,15 +30,15 @@ config = {
 if __name__ == '__main__':
 	# Specify which set to test
 	split = 'val'
-	model = FCN8_test(config)
+	model = FCN16_test(config)
 	# Import, since we don't want the random shuffle
 	data_loader = Dataloader_test(split, config)
 
 	saver = tf.train.Saver()
-	ckpt = '../model/FCN8_adam_iter_10000.ckpt'
+	ckpt = './models/FCN16_adam_iter_5000.ckpt'
 	ID = ckpt.split('/')[-1][:-5]
 
-	res_dir = '../result/'
+	res_dir = '.dataset/result/'
 	dump_path = join(res_dir, ID)
 	dump_path = join(dump_path, split)
 	rgb_path = join(dump_path, 'rgb')
@@ -48,7 +51,7 @@ if __name__ == '__main__':
 
 	with tf.Session(config=tf.ConfigProto(allow_soft_placement=True)) as session:
 		saver.restore(session, ckpt)
-		print 'Model restored.'
+		print ('Model restored.')
 
 		# Iterate the whole set once
 		for i in range(data_loader.num_images):
@@ -68,4 +71,4 @@ if __name__ == '__main__':
 			cv2.imwrite(join(rgb_path, im_name), seg_rgb[:,:,::-1])
 			cv2.imwrite(join(gray_path, im_name), seg_valid)
 
-			print str(i) + '/' + str(data_loader.num_images) + ' done!'
+			print (str(i) + '/' + str(data_loader.num_images) + ' done!')
