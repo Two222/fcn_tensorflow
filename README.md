@@ -1,8 +1,8 @@
 # tf_fcn
 
-Implented FCN8,FCN16,FCN32,Using CRF layer
+Implented FCN8,FCN16,FCN32,Using CRF layer(import pydensecrf package)
 [CVPR 2015] Long et al. [Fully Convolutional Networks for Semantic Segmentation](https://people.eecs.berkeley.edu/~jonlong/long_shelhamer_fcn.pdf)
-infering [tf_fcn](https://github.com/Yuliang-Zou/tf_fcn)
+infering to [tf_fcn](https://github.com/Yuliang-Zou/tf_fcn)
 
 
 ## Requirements

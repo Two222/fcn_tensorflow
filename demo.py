@@ -3,7 +3,7 @@
 __author = "buyizhiyou"
 __date = "2018-4-26"
 
-# Demo to predict one image,plot results
+#Demo to predict one image,plot results
 
 import numpy as np
 import tensorflow as tf

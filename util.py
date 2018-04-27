@@ -13,7 +13,9 @@ MEAN_PIXEL = np.array([103.939, 116.779, 123.68])
 
 """Padding image and segmentation ground truth to (640, 640)"""
 def prep_im_for_blob(im_name, seg_name, rgb_to_gray, max_size=(640,640)):
+	#pdb.set_trace()
 	im = cv2.imread(im_name)    # OpenCV color map default BGR
+	#print(im.shape)
 	im = im - MEAN_PIXEL
 	seg = cv2.imread(seg_name)[:,:,::-1]
 

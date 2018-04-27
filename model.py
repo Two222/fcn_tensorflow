@@ -11,7 +11,10 @@ __date = "2018-4-26"
 import tensorflow as tf
 import numpy as np
 from util import bilinear_upsample_weights
-import pdb
+import sys,pdb
+sys.path.append('./crfrnn/')
+from crfrnn_layer import CrfRnnLayer
+
 
 """Define a base class, containing some useful layer functions"""
 class Network(object):
@@ -323,7 +326,6 @@ class FCN32(Network):
 			data_dict[scope] = {'weights':w.eval(), 'biases':b.eval()}
 		file_name = data_path[0:-5]
 		np.save(file_name, data_dict)
-		ipdb.set_trace()
 		return file_name + '.npy'
 
 
@@ -346,7 +348,7 @@ class FCN32(Network):
 			z_deconv = tf.nn.conv2d_transpose(conv8, w_deconv, 
 				[self.batch_num, self.max_size[0], self.max_size[1], self.num_classes],
 				strides=[1,32,32,1], padding='SAME', name='z') + b_deconv
-
+			#pdb.set_trace()
 		# Add to store dicts
 		self.outputs['deconv'] = z_deconv
 		self.layers['deconv']  = {'weights':w_deconv, 'biases':b_deconv}
@@ -405,7 +407,6 @@ class FCN16(FCN32):
 			data_dict[scope] = {'weights':w.eval(), 'biases':b.eval()}
 		file_name = data_path[0:-5]
 		np.save(file_name, data_dict)
-		ipdb.set_trace()
 		return file_name + '.npy'
 
 	def add_shortcut(self, bilinear=True):
@@ -440,6 +441,8 @@ class FCN16(FCN32):
 
 		# Element-wise sum
 		fusion = z_deconv + z_pool4
+		#pdb.set_trace()
+
 
 		# Add to store dicts
 		self.outputs['2x_conv8'] = z_deconv
@@ -468,9 +471,25 @@ class FCN16(FCN32):
 			z_deconv = tf.nn.conv2d_transpose(fusion, w_deconv, 
 				[self.batch_num, self.max_size[0], self.max_size[1], self.num_classes],
 				strides=[1,16,16,1], padding='SAME', name='z') + b_deconv
+			
+
+			'''
+			try to add crfRnn layer,you can also uncomment it 
+			'''
+
+			crf_deconv = CrfRnnLayer(image_dims=(self.max_size[0],self.max_size[1]),
+							 num_classes=self.num_classes,
+							 theta_alpha=160.,
+							 theta_beta=3.,
+							 theta_gamma=3.,
+							 num_iterations=10,
+							 name='crfrnn')([z_deconv,self.img])#shape=(1, 640, 640, 21)
+
+
 
 		# Add to store dicts
-		self.outputs['deconv'] = z_deconv
+		self.outputs['deconv'] = crf_deconv#<shape=(5, 640, 640, 21) dtype=float32>
+		#self.outputs['deconv'] = z_deconv#<shape=(5, 640, 640, 21) dtype=float32>
 		self.layers['deconv']  = {'weights':w_deconv, 'biases':b_deconv}
 
 
@@ -612,7 +631,7 @@ class FCN8_test(FCN8):
 
 if __name__ == '__main__':
 	config = {
-	'batch_num':5, 
+	'batch_num':2, 
 	'iter':100000, 
 	'num_classes':21, 
 	'max_size':(500,500),
@@ -621,7 +640,7 @@ if __name__ == '__main__':
 	'momentum': 0.9
 	}
 
-	model = FCN32(config)
-	#model = FCN16(config)
-	# model = FCN8(config)
+	#model = FCN32(config)
+	model = FCN16(config)
+	#model = FCN8(config)
 

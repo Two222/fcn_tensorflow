@@ -5,7 +5,6 @@ __date = "2018-4-26"
 
 # Demo to predict one image,plot results,add CRFlayer
 
-
 import sys,os,pdb
 import numpy as np
 import cv2
