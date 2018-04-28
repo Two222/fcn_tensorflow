@@ -9,10 +9,10 @@ import pdb
 
 
 config = {
-'batch_num':1, 
+'batch_num':2, 
 'iter':10000, 
 'num_classes':21, 
-'max_size':(640,640),
+'max_size':(500,500),
 'weight_decay': 0.0005,
 'base_lr': 0.0001,
 'momentum': 0.9
